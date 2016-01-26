@@ -1,8 +1,5 @@
 package com.example.android.movieapp;
 
-import android.annotation.TargetApi;
-import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
@@ -70,9 +67,9 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
                         (preference.getContext()).getString(preference.getKey(),""));
 
     }
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+    /*@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     public Intent getParentActivityIntent(){
         return super.getParentActivityIntent().addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-    }
+    }*/
 
 }

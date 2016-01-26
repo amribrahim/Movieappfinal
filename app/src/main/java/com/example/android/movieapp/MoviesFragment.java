@@ -1,7 +1,6 @@
 package com.example.android.movieapp;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Point;
@@ -34,6 +33,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 
 /**
  * Created by pc on 09/12/2015.
@@ -68,8 +68,11 @@ public  class MoviesFragment extends Fragment {
     public MoviesFragment() {
     }
 
-    public interface Callback{
-        public void onItemSelected(Uri posterUri);
+   /* public interface Callback{
+        public void onItemSelected(JSONObject posterUri);
+    }*/
+     public interface Callback{
+        public void onItemSelected(HashMap<String,String> posterUri);
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -102,28 +105,53 @@ public  class MoviesFragment extends Fragment {
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-             /*   Cursor cursor = (Cursor) parent.getItemAtPosition(position);
+// onitemselected no3 2eh we 27oto gwaha
+                //7age 3nd set
+                //23mel josnobject key , value
+
+
+             /* Cursor cursor = (Cursor) parent.getItemAtPosition(position);
                 if(cursor !=null){
-                ((Callback)getActivity()).onItemSelected();
+                ((Callback)getActivity()).onItemSelected(posters.get(position));
                 }*/
+                HashMap<String,String> mymovie = new HashMap<String,String>();
                 if(!sortByFavorites){
+
+
+
+
                 favorited = bindFavouriteToMovies();
-                Intent intent = new Intent(getActivity(),DetailActivity.class).
-                 putExtra("overview",overviews.get(position)).
-                putExtra("poster",posters.get(position)).
-                putExtra("title",titles.get(position)).
-                putExtra("dates",dates.get(position)).
-                putExtra("rating", ratings.get(position)).
-                putExtra("youtube", youtubes.get(position)).
-                putExtra("youtube2", youtubes2.get(position)).
-                putExtra("comments", comments.get(position)).
-                putExtra("favorite", favorited.get(position));
-                startActivity(intent);
+
+               // Intent intent = new Intent(getActivity(),DetailActivity.class).
+                 mymovie.put("overview",overviews.get(position).replace(","," ").replace(":"," "));
+                    mymovie.put("poster",posters.get(position));
+                    mymovie.put("title",titles.get(position).replace(","," ").replace(":"," "));
+                    mymovie.put("dates",dates.get(position));
+                mymovie.put("rating", ratings.get(position));
+                mymovie.put("youtube", youtubes.get(position));
+                mymovie.put("youtube2", youtubes2.get(position));
+
+                    String commentatString="";
+                    for (int i=0;i<comments.get(position).size() ;i++){
+                        if(i==0)
+                        commentatString = comments.get(position).get(i).replace(","," ");
+                        else
+                            commentatString =  "#%@#"+ comments.get(position).get(i).replace(","," ");
+
+
+                    }
+                mymovie.put("comments",commentatString);
+                    mymovie.put("favorite", favorited.get(position).toString());
+                    ((Callback) getActivity()).onItemSelected(mymovie);
+                //startActivity(intent);
 
             }
                 else{
-                    Intent intent = new Intent(getActivity(),DetailActivity.class).
-                            putExtra("overview",overviewsF.get(position)).
+
+
+
+                //    Intent intent = new Intent(getActivity(),DetailActivity.class).
+                       /*     putExtra("overview",overviewsF.get(position)).
                             putExtra("poster",postersF.get(position)).
                             putExtra("title",titlesF.get(position)).
                             putExtra("dates",datesF.get(position)).
@@ -131,10 +159,32 @@ public  class MoviesFragment extends Fragment {
                             putExtra("youtube", youtubesF.get(position)).
                             putExtra("youtube2", youtubes2F.get(position)).
                             putExtra("comments", commentsF.get(position)).
-                            putExtra("favorite", favorited.get(position));
-                    startActivity(intent);
+                            putExtra("favorite", favorited.get(position));*/
+                    mymovie.put("overview",overviewsF.get(position).replace(","," ").replace(":"," "));
+                    mymovie.put("poster",postersF.get(position));
+                    mymovie.put("title",titlesF.get(position).replace(","," ").replace(":"," "));
+                    mymovie.put("dates",datesF.get(position));
+                    mymovie.put("rating", ratingsF.get(position));
+                    mymovie.put("youtube", youtubesF.get(position));
+                    mymovie.put("youtube2", youtubes2F.get(position));
+
+                    String commentatString="";
+                    for (int i=0;i<comments.get(position).size() ;i++){
+                        if(i==0)
+                            commentatString = comments.get(position).get(i).replace(","," ");
+                        else
+                            commentatString =  "#%@#"+ comments.get(position).get(i).replace(","," ");
+
+
+                    }
+                    mymovie.put("comments", commentatString);
+                    mymovie.put("favorite", favorited.get(position).toString());
+                    ((Callback) getActivity()).onItemSelected(mymovie);
+                  // startActivity(intent);
                 }
+
         }}
+
         );
         return rootView;
     }
@@ -169,7 +219,7 @@ public  class MoviesFragment extends Fragment {
     @Override
     public  void onStart(){
 
-        super.onStart();
+     super.onStart();
         prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
         listener =  new preferenceChangeListener();
         prefs.registerOnSharedPreferenceChangeListener(listener);
@@ -201,16 +251,29 @@ public  class MoviesFragment extends Fragment {
                 if (layout.getChildCount() == 1)
                     layout.addView(textView);
                 gridView.setVisibility(GridView.GONE);
-            }
+            }else {
 
-            else{
                 gridView.setVisibility(GridView.VISIBLE);
                 layout.removeView(textView);
             }
+
+
+           /*  if(postersF!=null&&getActivity()!=null){
+
+                layout.removeView(textView);
+
+                gridView.setVisibility(GridView.VISIBLE);
+            }*/
+
             if(postersF!=null&&getActivity()!=null)
             {
+              //  gridView.setAdapter(null);
+
+
                 ImageAdapter adapter = new ImageAdapter(getActivity(),postersF,width);
+                //adapter.notifyDataSetChanged();
                 gridView.setAdapter(adapter);
+               // gridView.setVisibility(GridView.VISIBLE);
             }
         }
         else {

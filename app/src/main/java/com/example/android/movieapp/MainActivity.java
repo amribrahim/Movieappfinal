@@ -3,11 +3,13 @@ package com.example.android.movieapp;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import java.util.HashMap;
 
 
 public class MainActivity extends ActionBarActivity implements MoviesFragment.Callback{
@@ -69,21 +71,22 @@ public class MainActivity extends ActionBarActivity implements MoviesFragment.Ca
 
         return super.onOptionsItemSelected(item);
     }
-    @Override
+   /* @Override
     protected void onResume(){
         super.onResume();
         MoviesFragment ff = (MoviesFragment)getSupportFragmentManager().findFragmentById(R.id.fragment_movie);
         DetailActivityFragment df = (DetailActivityFragment)getSupportFragmentManager().findFragmentByTag(DETAILFRAGMENT_TAG);
-    }
+    }*/
 
     @Override
-    public void onItemSelected(Uri posterUri) {
+    public void onItemSelected(HashMap<String,String> posterUri) {
+        Log.e("TAG",String.valueOf(mTwoPane));
         if (mTwoPane) {
             // In two-pane mode, show the detail view in this activity by
             // adding or replacing the detail fragment using a
             // fragment transaction.
             Bundle args = new Bundle();
-            args.putParcelable(DetailActivityFragment.DETAIL_URI, posterUri);
+            args.putString(DetailActivityFragment.DETAIL_URI, posterUri.toString());
 
             DetailActivityFragment fragment = new DetailActivityFragment();
             fragment.setArguments(args);
@@ -92,8 +95,8 @@ public class MainActivity extends ActionBarActivity implements MoviesFragment.Ca
                     .replace(R.id.movie_detail_container, fragment, DETAILFRAGMENT_TAG)
                     .commit();
         } else {
-            Intent intent = new Intent(this, DetailActivity.class)
-                    .setData(posterUri);
+            Intent intent = new Intent(this, DetailActivity.class);
+                   intent.putExtra(DetailActivityFragment.DETAIL_URI,posterUri.toString());
             startActivity(intent);
         }
     }
